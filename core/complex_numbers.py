@@ -76,4 +76,18 @@ class complex:
             return complex(a, b)
 
     def complex_to_trig(self):
-        pass
+        from math import radians, atan, pi
+        b = self.im
+        a = self.r
+        if a > 0:
+                pfi = radians(atan(b / a))
+        elif a < 0 and b >= 0:
+            pfi = radians(atan(b / a) + pi)
+        elif a < 0 and b < 0:
+            pfi = radians(atan(b / a) - pi)
+        elif a == 0 and b > 0:
+            pfi = radians(pi/2)
+        elif a == 0 and b < 0:
+            pfi = radians(-pi/2)
+        elif a == 0 and b == 0:
+            TypeError('For r = 0 and im = 0 pfi is not defined')
