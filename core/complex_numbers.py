@@ -5,15 +5,30 @@ class complex:
         self.im = im
     
     def __add__(self,other):
-        return complex(self.r + other.r, self.im + other.im)
+        if isinstance(other, complex):
+            return complex(self.r + other.r, self.im + other.im)
+        elif isinstance(other, trigcomplex):
+            other = other.trig_to_complex()
+            return complex(self.r + other.r, self.im + other.im)
+        return TypeError(f'Cant add {type(other)} to {type(self)}')
     
     def __sub__(self, other):
-        return complex(self.r - other.r, self.im - other.im)
+        if isinstance(other, complex):
+            return complex(self.r - other.r, self.im - other.im)
+        elif isinstance(other, trigcomplex):
+            other = other.trig_to_complex()
+            return complex(self.r - other.r, self.im - other.im)
+        return TypeError(f'Cant sub {type(other)} from {type(self)}')
     
     def __eq__(self, other):
-        return self.r == other.r and self.im == other.im
+        if isinstance(other, complex):
+            return self.r == other.r and self.im == other.im
+        elif isinstance(other, trigcomplex):
+            other = other.trig_to_complex()
+            return self.r == other.r and self.im == other.im
+        return TypeError(f'Cant compare {type(other)} with {type(self)}')
     
-    def __lt__(self, other):
+    def __lt__(self):
         return TypeError("Complex numbers cannot be compared")
     
     def __abs__(self):
@@ -23,10 +38,20 @@ class complex:
         return f'{self.r:.3g} + i{self.im:.3g}' if self.im >= 0 else f'{self.r:.3g} - i{abs(self.im):.3g}'
     
     def __mul__(self, other):
-        return complex(self.r * other.r - self.im * other.im, self.r * other.im + self.im * other.r)
+        if isinstance(other, complex):
+            return complex(self.r * other.r - self.im * other.im, self.r * other.im + self.im * other.r)
+        elif isinstance(other, trigcomplex):
+            other = other.trig_to_complex()
+            return complex(self.r * other.r - self.im * other.im, self.r * other.im + self.im * other.r)
+        return TypeError(f'Cant multy {type(self)} on {type(other)}')
     
     def __truediv__(self, other):
-        return complex((self.r * other.r + self.im * other.im)/(other.r ** 2 + other.im ** 2), (self.im * other.r - self.r * other.im)/(other.r ** 2 + other.im ** 2)) if other.r**2 + other.im**2 != 0 else TypeError('Complex_TrueDiv: Division by Zero')
+        if isinstance(other, complex):
+            return complex((self.r * other.r + self.im * other.im)/(other.r ** 2 + other.im ** 2), (self.im * other.r - self.r * other.im)/(other.r ** 2 + other.im ** 2)) if other.r**2 + other.im**2 != 0 else TypeError('Complex_TrueDiv: Division by Zero')
+        elif isinstance(other, trigcomplex):
+            other = other.trig_to_complex()
+            return complex((self.r * other.r + self.im * other.im)/(other.r ** 2 + other.im ** 2), (self.im * other.r - self.r * other.im)/(other.r ** 2 + other.im ** 2)) if other.r**2 + other.im**2 != 0 else TypeError('Complex_TrueDiv: Division by Zero')
+        return TypeError(f'Cant div {type(self)} on {type(other)}')
     
     def __pow__(self, n):
         if n == 0:
@@ -43,26 +68,14 @@ class complex:
         return res        
 
     def complex_to_trig(self):
-        from math import atan, pi
-        a = self.r
-        b = self.im
+        from math import atan2, degrees
         r = abs(self)
-        if a > 0:
-                pfi = atan(b / a)
-        elif a < 0 and b >= 0:
-            pfi = atan(b / a) + pi
-        elif a < 0 and b < 0:
-            pfi = atan(b / a) - pi
-        elif a == 0 and b > 0:
-            pfi = pi/2
-        elif a == 0 and b < 0:
-            pfi = -pi/2
-        elif a == 0 and b == 0:
-            return TypeError('For r = 0 and im = 0 pfi is not defined')
-        return trigcomplex(pfi, r)
+        pfi_rad = atan2(self.im, self.r) 
+        pfi_deg = degrees(pfi_rad)
+        return trigcomplex(r, pfi_deg)
     
 class trigcomplex:
-    def __init__(self, pfi=0, r=0):
+    def __init__(self, r=0, pfi=0):
         self.pfi = pfi
         self.r = r
 
@@ -74,17 +87,34 @@ class trigcomplex:
         return complex(self.r * cos(radians(self.pfi)), self.r * sin(radians(self.pfi)))
     
     def __mul__(self, other):
-        return trigcomplex(self.r * other.r, self.pfi + other.pfi)
+        if isinstance(other, trigcomplex):
+            return trigcomplex(self.r * other.r, self.pfi + other.pfi)
+        elif isinstance(other, complex):
+            other = other.complex_to_trig()
+            return trigcomplex(self.r * other.r, self.pfi + other.pfi)
+        return TypeError(f'Cant add {type(other)} to {type(self)}')
     
     def __truediv__(self, other):
-        return trigcomplex(self.r / other.r, self.pfi - other.pfi)
+        if isinstance(other, trigcomplex):
+            return trigcomplex(self.r / other.r, self.pfi - other.pfi)
+        elif isinstance(other, complex):
+            other = other.complex_to_trig()
+            return trigcomplex(self.r / other.r, self.pfi - other.pfi)
+        return TypeError(f'Cant add {type(other)} to {type(self)}')
     
     def __pow__(self, n):
-        return trigcomplex(self.pfi * n, self.r * n)
+        return trigcomplex(self.r ** n, self.pfi * n)
     
     def __add__(self, other):
-        return (self.trig_to_complex() + other.trig_to_complex()).complex_to_trig()
+        if isinstance(other, trigcomplex):
+            return (self.trig_to_complex() + other.trig_to_complex()).complex_to_trig()
+        elif isinstance(other, complex):
+            return (self.trig_to_complex() + other).complex_to_trig()
+        return TypeError(f'Cant add {type(other)} to {type(self)}')
     
     def __sub__(self, other):
-        return (self.trig_to_complex() - other.trig_to_complex()).complex_to_trig()
-    
+        if isinstance(other, trigcomplex):
+            return (self.trig_to_complex() - other.trig_to_complex()).complex_to_trig()
+        elif isinstance(other, complex):
+            return (self.trig_to_complex() - other).complex_to_trig()
+        return TypeError(f'Cant add {type(other)} to {type(self)}')
