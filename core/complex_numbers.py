@@ -28,8 +28,10 @@ class complex:
             return self.r == other.r and self.im == other.im
         return TypeError(f'Cant compare {type(other)} with {type(self)}')
     
-    def __lt__(self):
-        return TypeError("Complex numbers cannot be compared")
+    def __lt__(self, other):
+        if isinstance(self, (complex, trigcomplex)) and isinstance(other, (complex, trigcomplex)):
+            return TypeError("Complex numbers cannot be compared")
+        return TypeError('Cant compare this types')
     
     def __abs__(self):
         return (self.r**2 + self.im**2)**(1/2)
@@ -93,6 +95,9 @@ class trigcomplex:
             other = other.complex_to_trig()
             return trigcomplex(self.r * other.r, self.pfi + other.pfi)
         return TypeError(f'Cant add {type(other)} to {type(self)}')
+    
+    def __abs__(self):
+        return self.r
     
     def __truediv__(self, other):
         if isinstance(other, trigcomplex):
