@@ -25,6 +25,15 @@ def test_complex():
     print('pow b**4 -> ', b**4)
     # from complex to triginometrical complex number
     print('from complex a -> ', a, 'to trigonometrical a -> ', a.complex_to_trig())
+    #test with int\float
+    print('a * 5 -> ', a * 5)
+    print('a * 2.4 -> ', a * 2.4)
+    print('a / 2 -> ', a / 2)
+    print('a / 2.4 -> ', a / 2.4)
+    print('a - 5 -> ',a-5 )
+    print('a - 2.4 -> ',a - 2.4)
+    print('a + 5 -> ', a + 5)
+    print('a + 2.4 -> ', a + 2.4)
 
 def test_trigcomplex():
     print('-----test_trigcomplex-----')
@@ -42,6 +51,15 @@ def test_trigcomplex():
     print('abs(b) module -> ', abs(b))
     #transfer trigonometrical form to complex
     print(f'trigonometrical a:{a} to complex -> ', a.trig_to_complex())
+    #test with int\float
+    print('a * 5 -> ', a * 5)
+    print('a * 2.4 -> ', a * 2.4)
+    print('a / 2 -> ', a / 2)
+    print('a / 2.4 -> ', a / 2.4)
+    print('a - 5 -> ',a-5 )
+    print('a - 2.4 -> ',a - 2.4)
+    print('a + 5 -> ', a + 5)
+    print('a + 2.4 -> ', a + 2.4)
 
 def test_complex_and_trig():
     print('-----test_complex_and_trig-----')
@@ -71,7 +89,7 @@ def test_pinum():
 
 def test_numericalmethods():
     from math import pi, exp
-    from visualization.d2 import line2d
+    from visualization.d2 import plotter2d
     const = 2
     def f(x):
         return (x/const - 1) * x
@@ -86,10 +104,9 @@ def test_numericalmethods():
     y0 = f(x0)
     xn = e
     x_values, approximated_y = NumericalMethods.euler_method(fxy, x0, y0, xn, step=0.1)
-    line2d(x_values,approximated_y)
-
+    
 if __name__ == '__main__':
     # test_complex()
-    # test_trigcomplex()
+    test_trigcomplex()
     # test_complex_and_trig()
-    test_numericalmethods()
+    # test_numericalmethods()

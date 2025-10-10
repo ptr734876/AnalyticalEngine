@@ -1,9 +1,7 @@
-import matplotlib.pyplot as plt
-def line2d(x, y, xname='x', yname='y', label='', title=''):
-    plt.plot(x, y, label)
+import matplotlib as plt
+import typing
 
-    plt.xlabel(xname)
-    plt.ylabel(yname)
-    plt.title(title)
-    plt.legend()
-    plt.show()
+class plotter2d:
+    
+    def __init__(self, x0: float, xn: float, function=None) -> None:
+        pass
