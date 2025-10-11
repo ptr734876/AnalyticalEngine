@@ -22,7 +22,7 @@ class complex:
         elif isinstance(other, trigcomplex):
             other = other.trig_to_complex()
             return complex(self.r + other.r, self.im + other.im)
-        return TypeError(f'Cant add {type(other)} to {type(self)}')
+        raise TypeError(f'Cant add {type(other)} to {type(self)}')
     
     def __sub__(self: complex | int | float, other: complex | trigcomplex | int | float) -> complex:
         self, other = complex.complex_type_check(self, other)
@@ -31,22 +31,22 @@ class complex:
         elif isinstance(other, trigcomplex):
             other = other.trig_to_complex()
             return complex(self.r - other.r, self.im - other.im)
-        return TypeError(f'Cant sub {type(other)} from {type(self)}')
+        raise TypeError(f'Cant sub {type(other)} from {type(self)}')
     
-    def __eq__(self: complex | int | float, other: trigcomplex | complex | int | float) -> complex:
+    def __eq__(self: complex | int | float, other: trigcomplex | complex | int | float) -> bool:
         self, other = complex.complex_type_check(self, other)
         if isinstance(other, complex):
             return self.r == other.r and self.im == other.im
         elif isinstance(other, trigcomplex):
             other = other.trig_to_complex()
             return self.r == other.r and self.im == other.im
-        return TypeError(f'Cant compare {type(other)} with {type(self)}')
+        raise TypeError(f'Cant compare {type(other)} with {type(self)}')
     
     def __lt__(self: complex | int | float, other: complex | trigcomplex | int | float) -> complex:
         self, other = complex.complex_type_check(self, other)
         if isinstance(self, complex | trigcomplex) and isinstance(other, complex | trigcomplex):
-            return TypeError("Complex numbers cannot be compared")
-        return TypeError('Cant compare this types')
+            raise TypeError("Complex numbers cannot be compared")
+        raise TypeError('Cant compare this types')
     
     def __abs__(self: complex) -> float:
         return (self.r**2 + self.im**2)**(1/2)
@@ -61,7 +61,7 @@ class complex:
         elif isinstance(other, trigcomplex):
             other = other.trig_to_complex()
             return complex(self.r * other.r - self.im * other.im, self.r * other.im + self.im * other.r)
-        return TypeError(f'Cant multy {type(self)} on {type(other)}')
+        raise TypeError(f'Cant multy {type(self)} on {type(other)}')
     
     def __truediv__(self: complex | int | float, other: complex | trigcomplex | int | float) -> complex:
         self, other = complex.complex_type_check(self, other)
@@ -69,10 +69,13 @@ class complex:
             return complex((self.r * other.r + self.im * other.im)/(other.r ** 2 + other.im ** 2), (self.im * other.r - self.r * other.im)/(other.r ** 2 + other.im ** 2)) if other.r**2 + other.im**2 != 0 else TypeError('Complex_TrueDiv: Division by Zero')
         elif isinstance(other, trigcomplex):
             other = other.trig_to_complex()
-            return complex((self.r * other.r + self.im * other.im)/(other.r ** 2 + other.im ** 2), (self.im * other.r - self.r * other.im)/(other.r ** 2 + other.im ** 2)) if other.r**2 + other.im**2 != 0 else TypeError('Complex_TrueDiv: Division by Zero')
-        return TypeError(f'Cant div {type(self)} on {type(other)}')
+            if other.r**2 + other.im**2 != 0:
+                return complex((self.r * other.r + self.im * other.im)/(other.r ** 2 + other.im ** 2), (self.im * other.r - self.r * other.im)/(other.r ** 2 + other.im ** 2)) 
+            else:
+                raise TypeError('Complex_TrueDiv: Division by Zero')
+        raise TypeError(f'Cant div {type(self)} on {type(other)}')
     
-    def __pow__(self: complex, n: complex | trigcomplex) -> complex:
+    def __pow__(self: complex, n: int | float) -> complex:
         if n == 0:
             return complex(1, 0)
         if n == 1:
@@ -97,9 +100,8 @@ class complex:
         if isinstance(self, int | float):
             complex.num_to_complex(self)
 
-        pfi_rad = atan2(self.im, self.r) 
-        pfi_deg = degrees(pfi_rad)
-        return trigcomplex(r, pfi_deg)
+        pfi = degrees(atan2(self.im, self.r)) 
+        return trigcomplex(r, pfi)
     
 class trigcomplex:
     def __init__(self, r=0, pfi=0):
@@ -130,7 +132,7 @@ class trigcomplex:
         elif isinstance(other, complex):
             other = other.complex_to_trig()
             return trigcomplex(self.r * other.r, self.pfi + other.pfi)
-        return TypeError(f'Cant add {type(other)} to {type(self)}')
+        raise TypeError(f'Cant add {type(other)} to {type(self)}')
     
     def __abs__(self: trigcomplex) -> int | float:
         return self.r
@@ -142,9 +144,9 @@ class trigcomplex:
         elif isinstance(other, complex):
             other = other.complex_to_trig()
             return trigcomplex(self.r / other.r, self.pfi - other.pfi)
-        return TypeError(f'Cant add {type(other)} to {type(self)}')
+        raise TypeError(f'Cant add {type(other)} to {type(self)}')
     
-    def __pow__(self: trigcomplex, n: complex | trigcomplex) -> trigcomplex:
+    def __pow__(self: trigcomplex, n: int | float) -> trigcomplex:
         return trigcomplex(self.r ** n, self.pfi * n)
     
     def __add__(self: trigcomplex | int | float, other: complex | trigcomplex | int | float) -> trigcomplex:
@@ -153,7 +155,7 @@ class trigcomplex:
             return (self.trig_to_complex() + other.trig_to_complex()).complex_to_trig()
         elif isinstance(other, complex):
             return (self.trig_to_complex() + other).complex_to_trig()
-        return TypeError(f'Cant add {type(other)} to {type(self)}')
+        raise TypeError(f'Cant add {type(other)} to {type(self)}')
     
     def __sub__(self: trigcomplex | int | float, other: complex | trigcomplex | int | float) -> trigcomplex:
         self, other = trigcomplex.trig_complex_type_check(self, other)
@@ -161,4 +163,4 @@ class trigcomplex:
             return (self.trig_to_complex() - other.trig_to_complex()).complex_to_trig()
         elif isinstance(other, complex):
             return (self.trig_to_complex() - other).complex_to_trig()
-        return TypeError(f'Cant add {type(other)} to {type(self)}')
+        raise TypeError(f'Cant add {type(other)} to {type(self)}')
