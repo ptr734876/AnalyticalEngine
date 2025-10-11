@@ -1,5 +1,4 @@
 from algorithms.digits import pinum
-from typing import Union
 
 class trigcomplex:
     pass
@@ -9,7 +8,7 @@ class complex:
         self.r = r
         self.im = im
 
-    def complex_type_check(self: int | float | complex | trigcomplex, other: int | float | complex | trigcomplex) -> tuple[complex | trigcomplex, complex | trigcomplex]:
+    def complex_type_check(self: int | float | complex | trigcomplex, other: int | float | complex | trigcomplex) -> tuple[complex, complex]:
         if isinstance(self, int | float):
             self = complex.num_to_complex(self)
         if isinstance(other, int | float):
@@ -87,8 +86,9 @@ class complex:
             n = n // 2
         return res        
 
-    def num_to_complex(self: int | float) -> complex:
-        return complex(self, 0)
+    @staticmethod
+    def num_to_complex(num: int | float) -> complex:
+        return complex(num, 0)
 
     def complex_to_trig(self: complex | int | float) -> trigcomplex:
         from math import atan2, degrees
@@ -132,7 +132,7 @@ class trigcomplex:
             return trigcomplex(self.r * other.r, self.pfi + other.pfi)
         return TypeError(f'Cant add {type(other)} to {type(self)}')
     
-    def __abs__(self: trigcomplex) -> Union[int, float]:
+    def __abs__(self: trigcomplex) -> int | float:
         return self.r
     
     def __truediv__(self: trigcomplex | int | float, other: complex | trigcomplex | int | float) -> trigcomplex:
