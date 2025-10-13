@@ -44,6 +44,10 @@ class complex:
     
     def __lt__(self: complex | int | float, other: complex | trigcomplex | int | float) -> complex:
         self, other = complex.complex_type_check(self, other)
+        if self.im == 0 and other.im == 0:
+            return self.r > other.r
+        elif self.r == 0 and other.r == 0:
+            return self.im > other.im
         if isinstance(self, complex | trigcomplex) and isinstance(other, complex | trigcomplex):
             raise TypeError("Complex numbers cannot be compared")
         raise TypeError('Cant compare this types')
