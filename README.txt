@@ -1,6 +1,6 @@
 # AnalyticalEngine
 
-AnalyticalEngine is a Python library for mathematical computations, inspired by Charles Babbage's Analytical Engine. It provides tools for numerical analysis, complex arithmetic, and data visualization.
+AnalyticalEngine is a Python library for mathematical computations, inspired by Charles Babbage's Analytical Engine. It provides tools for numerical analysis, complex arithmetic, data structure management, and data visualization.
 
 ## Features
 
@@ -19,11 +19,21 @@ AnalyticalEngine is a Python library for mathematical computations, inspired by 
   - SciPy-based integration for advanced solving
 - **Digits**: Utility for representing π in degree-based fractions.
 
+### Data Structures Module
+- **SQtable**: A class for managing SQLite tables.
+  - Create tables with auto-incrementing ID.
+  - Insert data with parameterized queries.
+  - Add columns dynamically.
+  - Delete tables and associated files.
+  - Basic setup for data storage and retrieval (with notes on future improvements like SELECT methods, error handling, and integration with numpy/pandas).
+
 ### Visualization Module
 - **2D Plotting**: Simple matplotlib-based class for 2D graphs with interactive display.
+  - Plot single or multiple graphs.
+  - Customizable figure sizes and labels.
 
 ### Tests
-- Comprehensive test suite for all modules, including ODE solving examples with visualizations.
+- Comprehensive test suite for all modules, including ODE solving examples with visualizations, complex number operations, and data structure management.
 
 ## Installation
 
@@ -63,13 +73,26 @@ x_vals, y_vals = NumericalMethods.euler_method(f, 0, 1, 2, step=0.1)
 print(x_vals, y_vals)
 ```
 
+### Data Structures
+```python
+from data_structures.SQtable import sqtable
+
+# Create a table
+table = sqtable('example_table', 'example_db')
+table.sqaddcolumn('name', 'TEXT')
+table.sqaddcolumn('value', 'REAL')
+
+# Insert data
+data = [('Alice', 10.5), ('Bob', 20.0)]
+table.sqinsert(['name', 'value'], data)
+```
+
 ### Visualization
 ```python
 from visualization.d2 import plotter2d
 import matplotlib.pyplot as plt
 
-plotter = plotter2d()
-plt.plot([1, 2, 3], [1, 4, 9])
+plotter = plotter2d([1, 2, 3], [1, 4, 9], "Quadratic")
 plotter.show()
 ```
 
@@ -104,22 +127,22 @@ ODEs like dy/dx = f(x, y) are solved numerically.
 - **Analytical vs Numerical**: Numerical methods approximate solutions; analytical provides exact if possible.
   - Example in examples/NumericExample.py: Solving dy/dx = (y-2)/cos(x) using Euler, RK4, and analytical.
 
-These methods justify the library's computations by providing both approximate and exact solutions for validation.
-
 ## Running Tests
 
 Run the test files in the `tests/` directory:
-- `python tests/test.py` for general tests.
-- `python tests/test_complex.py` for complex number tests.
+- `python tests/test.py` for general tests (complex numbers, numerical methods, visualization).
+- `python tests/test_data_structure.py` for data structure tests.
+- `python tests/test_d2.py` for visualization tests.
 
 ## Project Structure
 
-- `core/`: Core mathematical classes (complex numbers).
-- `algorithms/`: Numerical algorithms and utilities.
-- `visualization/`: Visualization tools.
-- `tests/`: Test suites.
+- `core/`: Core mathematical classes (complex numbers, constants).
+- `algorithms/`: Numerical algorithms and utilities (ODE solvers, digits).
+- `data_structures/`: Data structure implementations (SQLite table manager).
+- `datasets/`: Sample databases (e.g., first_table.db).
+- `visualization/`: Visualization tools (2D plotting).
+- `tests/`: Test suites for all modules.
 - `examples/`: Example scripts (e.g., NumericExample.py for ODE solving).
-- `data_structures/`: (Empty, for future data structures).
 - `LICENSE`: MIT license.
 
 ## Contributing
