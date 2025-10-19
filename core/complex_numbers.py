@@ -4,7 +4,7 @@ class trigcomplex:
     pass
 
 class complex:
-    def __init__(self, r=0, im=0):
+    def __init__(self, r: int| float=0, im:int|float=0):
         self.r = r
         self.im = im
 
@@ -108,7 +108,7 @@ class complex:
         return trigcomplex(r, pfi)
     
 class trigcomplex:
-    def __init__(self, r=0, pfi=0):
+    def __init__(self, r:int|float=0, pfi:int|float=0):
         self.pfi = pfi
         self.r = r
 

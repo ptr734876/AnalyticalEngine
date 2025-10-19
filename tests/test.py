@@ -96,7 +96,9 @@ def test_2d():
 
     
 if __name__ == "__main__":
-    test_complex()
-    test_trigcomplex()
-    test_complex_and_trig()
+    import math
+    # test_complex()
+    # test_trigcomplex()
+    # test_complex_and_trig()
     # test_2d() #broken
+    print(math.log(math.exp(1)**(2* math.sin(math.pi/2))))
