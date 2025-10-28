@@ -7,15 +7,14 @@ from math import cos, tan, pi, sin, log, sqrt, exp
 import matplotlib.pyplot as plt
 from visualization.d2 import plotter2d
 import numpy
-numpy.array_equal()
 
 def numeric_mothods_dz54():
     const = 1
     def f(x):
-        return const*(sin(x)+1)/cos(x) + 2
+        return 2 + const*cos(x)
     
     def fxy(x, y):
-        return (y-2)/cos(x)
+        return (2 - y) * tan(x)
     
     s = -pi
     e = pi*2
@@ -31,18 +30,16 @@ def numeric_mothods_dz54():
     # a.show()
     # b.show()
     # c.show()
-    d.show()
-    # plotter2d.compareplots([a,b,c,d], title='numeric methods 54')
+    # d.show()
+    plotter2d.compareplots([a,b,c,d], title='numeric methods 54')
 
 def numeric_mothods_dz111():
-    const = -3
     def f(x):
         n=1
         return (-1 * x * log(log(x)))
     
     def fxy(x, y):
         return (y/x) - exp(y/x)
-    # dz 262-266 and 268-272 parametrs
     s = pi
     e = pi ** 3
     x0 = s
@@ -57,22 +54,18 @@ def numeric_mothods_dz111():
     # b.show()
     # c.show()
     # d.show()
-    print(a, b)
-    plotter2d.compareplots([a, b, c ,d])
+    # print(a, b)
+    plotter2d.compareplots([a, b, c ,d], title='numeric methods 111')
 
-def numeric_mothods_dz112():
-    const = -3
+def numeric_mothods_dz154():
+    const = pi**4
     def f(x):
         n=1
-        return x*sin(log(x)+const)
-    
+        return (-3 * x**3 + x**3 * const) ** (1/3)
     def fxy(x, y):
-        if x * x - y * y < 0:
-            return y/x
-        return (sqrt(x*x - y*y)+ y)/x
-    # dz 262-266 and 268-272 parametrs
-    s = -pi**4
-    e = pi ** 4
+        return (x**2 + y**3)/(x*y**2)
+    s = pi
+    e = pi ** 3
     x0 = s
     y0 = f(x0)
     xn = e
@@ -85,8 +78,29 @@ def numeric_mothods_dz112():
     # b.show()
     # c.show()
     # d.show()
-    plotter2d.compareplots([a, b, c ,d])
+    # print(a, b)
+    plotter2d.compareplots([a, b, c ,d], title='numeric methods 154')
+
+def dz():
+    def f(y, y_pred, x, h):
+        return ((y-y_pred) / h)**3 + (y - y_pred)/h - x
+    s = pi
+    e = pi ** 3
+    x0 = s
+    y0 = 1
+    xn = e
+    step = 0.01
+    a = plotter2d(*NumericalMethods.end_subs_method(f, x0, y0, xn, step), '')
+    a.show()
+
+def analit_dz():
+    z = numpy.linspace(0,1, 1001)
+    a = plotter2d([i**3 + i for i in z], [(3/4) * i**4 + (i**2)/2 + 1 for i in z], '')
+    a.show()
 
 if __name__ == '__main__':
-    # numeric_mothods_dz54()
-    numeric_mothods_dz112()
+    numeric_mothods_dz54()
+    # numeric_mothods_dz111()
+    # numeric_mothods_dz154()
+    # analit_dz()
+    # dz()

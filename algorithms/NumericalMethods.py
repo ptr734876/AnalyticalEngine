@@ -78,3 +78,31 @@ class NumericalMethods:
         y_values = solution.y[0].tolist()
 
         return x_values, y_values
+    
+    @staticmethod
+    def root(f, a, b, eps=10**(-9)):
+        while (b - a) > eps:
+            x0 = (a + b) / 2
+            if f(x0) == 0:
+                return 0 
+            if f(x0) * f(a) < 0:
+                b = x0
+            if f(x0) * f(b) < 0:
+                a = x0
+        return (a + b) / 2
+
+    @staticmethod
+    def end_subs_method(f, x0, y0, xn, step=0.1, accuracy=10**(-9), delta=10*(-3)):
+        from numpy import linspace
+        x_values = linspace(x0, xn, int((xn - x0)/step))
+        y_values = [y0]
+
+        h = 1 / (len(x_values) - 1)
+
+        y_pred = y0
+        for i in range(len(x_values) - 1):
+            f(y_values[-1], y_pred, x_values[i], h)
+            y_next = NumericalMethods.root(f, y_pred - delta, y_pred + delta, accuracy)
+            y_values.append(y_next)
+            y_pred = y_next
+        return x_values, y_values

@@ -11,14 +11,15 @@ def test2():
         f = np.random.uniform(a, b, size=(n, 1))
         f1 = func(f)
         return f, f1
+    
     def func(f):
-        return f * 2
+        return f ** 2 - f*8 - 18
     X_train, y_train = create_data(100, -100, 100, func)
 
-    a = BaseNeyro(X_train, y_train, [5, 1], task='regression')
+    a = BaseNeyro(X_train, y_train, 0, task='regression')
     
     print("Training...")
-    for i in range(10010):
+    for i in range(20000):
         c, error = a.backward(lmd=0.001)
         if i % 1000 == 0:
             print(f"Iteration {i}, Error: {error:.6f}")
@@ -29,7 +30,7 @@ def test2():
 
     print("\nPredictions:")
     for i in range(len(test_input)):
-        print(f"Input: {test_input[i][0]}, Expected: {test_input[i][0]*2:.1f}, Predicted: {predictions[i][0]:.2f}")
+        print(f"Input: {test_input[i][0]}, Expected: {func(test_input[i][0]):.1f}, Predicted: {predictions[i][0]:.2f}")
 
 if __name__ == '__main__':
     test2()

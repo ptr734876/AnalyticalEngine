@@ -15,20 +15,23 @@ class BaseNeyro:
             self.neurns = layers_number
         elif isinstance(layers_number, int):
             self.neurns = np.linspace(self.inx.shape[1],  self.TrueY.shape[1], layers_number).astype(int)
-
+        
         lower_digits = 0.1
         self.ws = []
         self.bs = []
-        self.ws.append(np.random.randn(self.inx.shape[1], self.neurns[0]) * lower_digits)
-        self.bs.append(np.zeros((1, self.neurns[0])))
 
         if len(self.neurns) == 0:
             self.ws.append(np.random.randn(self.inx.shape[1], self.TrueY.shape[1]) * lower_digits)
+            self.bs.append(np.zeros((1, self.TrueY.shape[1])))
 
         elif len(self.neurns) == 1:
+            self.ws.append(np.random.randn(self.inx.shape[1], self.neurns[0]) * lower_digits)
+            self.bs.append(np.zeros((1, self.neurns[0])))            
             self.ws.append(np.random.randn(self.neurns[0], self.TrueY.shape[1]) * lower_digits)
-
-        else:        
+            self.bs.append(np.zeros((1, self.TrueY.shape[1]))) 
+        else:
+            self.ws.append(np.random.randn(self.inx.shape[1], self.neurns[0]) * lower_digits)   
+            self.bs.append(np.zeros((1, self.neurns[0])))
             for i in range(1, len(self.neurns)):
                self.ws.append(np.random.randn(self.neurns[i-1], self.neurns[i]) * lower_digits)
                self.bs.append(np.zeros((1, self.neurns[i])))
@@ -89,15 +92,14 @@ class BaseNeyro:
     act_der_methods = [softmax_der, sigmoid_der, tanh_der, relu_der, lin_der]
 
     def forward(self, act_layers=sigmoid, end_layer=softmax, input_data=None):
-        
+        self.activation = []
         if input_data is not None:
-            norm_data = (input_data - self.inx_mean) / self.inx_std
-            self.activation = [norm_data]
+            cur = input_data
         else:
-            self.activation = [self.inx]
+            cur = self.inx        
         self.zs = []
 
-        cur = self.inx
+        self.activation.append(cur)
 
         for i in range(len(self.ws) - 1):
             z = cur @ self.ws[i] + self.bs[i]
@@ -113,7 +115,8 @@ class BaseNeyro:
         return cur
     
     def predict(self, X, act_layers=relu, end_layer=linear):
-        norm_out = self.forward(act_layers=act_layers, end_layer=end_layer, input_data=X)
+        norm_X = (X - self.inx_mean) / self.inx_std
+        norm_out = self.forward(act_layers=act_layers, end_layer=end_layer, input_data=norm_X)
         denorm_out = norm_out * self.outy_std + self.outy_mean
         return denorm_out
     
@@ -141,17 +144,17 @@ class BaseNeyro:
             act_der = BaseNeyro.lin_der
         
         if end_layer == BaseNeyro.softmax:
-            end_der = lambda x: 1
+            end_der = BaseNeyro.softmax_der
         else:
             end_der = BaseNeyro.lin_der
 
         out = self.forward(act_layers=act_layers, end_layer=end_layer)
-        error = self.TrueY - out
-
+        
         if self.task == 'classification': # 1 | разделение по типу задачи - классификация
 
             if end_layer == BaseNeyro.softmax: # проверка на наличие софт макса на слое выхода (только его произваодня прописана в коде)
-                delta = (out - self.TrueY) / self.TrueY.shape[0] #cross entropy loss + softamx | out grad | TrueY - one hot encoded метка
+                # delta = (out - self.TrueY) / self.TrueY.shape[0] #cross entropy loss + softamx | out grad | TrueY - one hot encoded метка / ниже то что мне дала нейронка, я не понимаю почему так
+                delta = (out - self.TrueY)
             else:
                 raise ValueError(f'Not support classification with {act_layers, end_layer}') #ошибка при другом методе активации
             
@@ -165,8 +168,8 @@ class BaseNeyro:
         else:
             raise ValueError(f'{self.task} is unknown name')
 
-        for i in range(len(self.ws)-1, -1, -1):# обратный проход по слоям, от индекса len(self.ws)-1 до -1(тоесть нулевого)
-            grad_w = self.activation[i].T @ delta # проход по весам по прямой это imput  @ ws а для обратного направления это транспарированная матрца активаций на дельту тоесть рахницу
+        for i in range(len(self.ws)-1, -1, -1):# обратный проход по слоям, от индекса len(self.ws)-1 до нулевого
+            grad_w = self.activation[i].T @ delta # проход по весам по прямой это input  @ ws а для обратного направления это транспарированная матрца активаций на дельту тоесть рахницу
             grad_b = np.sum(delta, axis=0, keepdims=True)
 
             self.ws[i] -= lmd * grad_w # мы узнали градиент изменения и умножаем его лямбду чтобы уменьшить шаг изменения, а затем вычитаем это из весов чтобы изменить их
@@ -174,5 +177,6 @@ class BaseNeyro:
 
             if i > 0:# для последнего слоя нет предыдущего слоя чтобы найти ошибку
                 delta = delta @ self.ws[i].T * act_der(self.zs[i-1])# градиент по входу текущего слоя (delta @ self.ws[i].T) умножается на производную функ активации на текущем слое
-        
+        # Добавьте обновление для i=0 после цикла
         return out, BaseNeyro.mse(self.TrueY, out)
+    
